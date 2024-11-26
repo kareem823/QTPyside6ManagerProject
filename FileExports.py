@@ -1,13 +1,19 @@
+import webbrowser
 from PySide6.QtWidgets import QMainWindow, QMessageBox, QFileDialog
 from PySide6.QtGui import *
 from PySide6.QtCore import *
+from sqlalchemy import inspect
 from sqlalchemy.orm import sessionmaker
-from DBModel import Employee  # Ensure this imports your Employee model
-from EmployeeManager import EmployeeManager  # Import your EmployeeManager class
+from DBModel import Employee, engine, Session  # Ensure this imports your Employee model
+# from EmployeeManager import EmployeeManager  # Import your EmployeeManager class
 import pandas as pd
 #import plotly and fpdf
 from fpdf import FPDF
 import plotly.express as px
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib import colors
+from reportlab.lib import *
 #i want to import an excel library
 import xlsxwriter
 from EmployeeManager import EmployeeManager  # Import your EmployeeManager class
@@ -58,96 +64,59 @@ class FileExports(QMainWindow):
         workbook.close()
         QMessageBox.information(self, "Success", "Excel exported successfully.")
 
+
     # Export data as PDF file
     def export_pdf(self):
+
         # Open a file dialog to select the save location
         file_path, _ = QFileDialog.getSaveFileName(
-            self, 
-            "Save PDF File", 
-            "", 
-            "PDF Files (*.pdf);;All Files (*)"
-        )    
+            self,
+            "Save PDF File",
+            "",
+            "PDF Files (*.pdf);; All Files (*)"
+        )
 
-        if not file_path:
-            QMessageBox.warning(self, "Warning", "Export cancelled.")
-            return
+        if file_path:
+            #create a pdf document
+            doc = SimpleDocTemplate(file_path, page_size=letter)
 
-        # Retrieve all employees from the database
+        # Use SQLAlchemy's inspector to get column names
+        inspector = inspect(engine)
+        columns = inspector.get_columns('employees')
+        headers = [col['name'] for col in columns]
+
+        # Retrieve employee data
         employees = self.employee_manager.get_all_employees()
-        
-        # Initialize QPdfWriter
-        pdf = QPdfWriter(file_path)   
-        pdf.setPageSize(QPageSize.A4)
-        pdf.setPageMargins(QMarginsF(15, 15, 15, 15))
+        data = [headers]  # Initialize data with headers
 
-        painter = QPainter()
-        if not painter.begin(pdf):
-            QMessageBox.critical(self, "Error", "Failed to open file for writing.")
-            return
+        for employee in employees:
+            row = [
+                employee.employee_id,
+                employee.name,
+                employee.gender,
+                employee.position,
+                employee.birthday.strftime("%Y-%m-%d") if employee.birthday else "",
+                employee.phone,
+                employee.address,
+                employee.email
+            ]
+            data.append(row)
 
-        try:
-            # Set up font and metrics
-            font = QFont("Arial", 10)
-            painter.setFont(font)
-            metrics = painter.fontMetrics()
-            line_height = metrics.height() + 10
-            column_widths = [60, 100, 60, 100, 80, 100, 100, 150]  # Define column widths for better spacing
+            pdf_table = Table(data)
+
+            # apply style to the table
+            pdf_table.setStyle(TableStyle([('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                                           ('FONTNAME', (0,0), (-1, -1), 'Helvetica'),
+                                           ('FONTSIZE', (0,0), (-1, -1), 12),
+                                           ('BOTTOMPADDING', (0,0), (-1, -1), 12),
+                                           ('GRID', (0,0), (-1, -1), 1, colors.black),
+                                           ]))
+            #build the document
+            elements = [pdf_table]
+            doc.build(elements)
+
+        QMessageBox.information(self, "Success", "PDF saved successfully!")
+
             
-            # Define table properties
-            margin = 40
-            current_y = margin
-            current_x = margin
-
-            # Draw table headers with borders
-            pen = QPen(Qt.black)
-            pen.setWidth(1)
-            painter.setPen(pen)
             
-            headers = ["Employee ID", "Name", "Gender", "Position", "Birthday", "Phone", "Address", "Email"]
-            for i, header in enumerate(headers):
-                painter.drawRect(current_x, current_y, column_widths[i], line_height)
-                painter.drawText(current_x + 5, current_y + line_height - 5, header)
-                current_x += column_widths[i]
-            
-            current_y += line_height
 
-            # Write employee data with borders
-            for employee in employees:
-                current_x = margin
-                data = [
-                    employee.employee_id,
-                    employee.name,
-                    employee.gender,
-                    employee.position,
-                    employee.birthday.strftime("%Y-%m-%d") if employee.birthday else "",
-                    employee.phone,
-                    employee.address,
-                    employee.email
-                ]
-
-                for i, value in enumerate(data):
-                    painter.drawRect(current_x, current_y, column_widths[i], line_height)
-                    painter.drawText(current_x + 5, current_y + line_height - 5, str(value))
-                    current_x += column_widths[i]
-                
-                current_y += line_height
-                
-                # If current_y exceeds page height, add a new page
-                if current_y > pdf.height() - margin:
-                    pdf.newPage()
-                    current_y = margin
-                    
-                    # Re-draw headers on the new page
-                    current_x = margin
-                    for i, header in enumerate(headers):
-                        painter.drawRect(current_x, current_y, column_widths[i], line_height)
-                        painter.drawText(current_x + 5, current_y + line_height - 5, header)
-                        current_x += column_widths[i]
-                    current_y += line_height
-                    
-            painter.end()
-            QMessageBox.information(self, "Success", f"PDF exported successfully to {file_path}")
-        
-        except Exception as e:
-            painter.end()
-            QMessageBox.critical(self, "Error", f"An error occurred while exporting PDF:\n{str(e)}")

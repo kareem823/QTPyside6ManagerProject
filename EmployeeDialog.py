@@ -18,36 +18,54 @@ class EmployeeDialog(QDialog):
     def setup_ui(self):
         self.dialog_layout = QVBoxLayout(self)
 
-
+        self.name_label = QLabel("Name:")
+        self.dialog_layout.addWidget(self.name_label)
         self.name_input = QLineEdit()
-        self.name_input.setPlaceholderText("Name")
+        self.name_input.setPlaceholderText("Employee Name")
+        self.dialog_layout.addWidget(self.name_label)
         self.dialog_layout.addWidget(self.name_input)
 
+        self.employee_id_label = QLabel("Employee ID:")
         self.employee_id_input = QLineEdit()
         self.employee_id_input.setPlaceholderText("Employee ID")
+        self.dialog_layout.addWidget(self.employee_id_label)
         self.dialog_layout.addWidget(self.employee_id_input)
 
+        # i want to add alabel to show what the user is selecting
+        self.gender_label = QLabel("Gender:")
+        self.dialog_layout.addWidget(self.gender_label)
         self.gender_input = QComboBox()
         self.gender_input.addItems(["Male", "Female"])
         self.dialog_layout.addWidget(self.gender_input)
 
+        self.position_label = QLabel("Position:")
+        self.dialog_layout.addWidget(self.position_label)
         self.position_input = QLineEdit()
         self.position_input.setPlaceholderText("Position (e.g., Manager, Developer)")
         self.dialog_layout.addWidget(self.position_input)
 
         #I want to enter the birth date with the calender widget
+        self.birthday_label = QLabel("Date Joined:")
+        self.dialog_layout.addWidget(self.birthday_label)
         self.birthday_input = QDateEdit()
         self.birthday_input.setCalendarPopup(True)
         self.dialog_layout.addWidget(self.birthday_input)
 
+        self.address_input_label = QLabel("Address:")
+        self.dialog_layout.addWidget(self.address_input_label)
         self.address_input = QLineEdit()
         self.address_input.setPlaceholderText("Address")
         self.dialog_layout.addWidget(self.address_input)
 
+        #i want ot add a label for the phone number
+        self.phone_label = QLabel("Phone:")
+        self.dialog_layout.addWidget(self.phone_label)
         self.phone_input = QLineEdit()
         self.phone_input.setPlaceholderText("Phone")
         self.dialog_layout.addWidget(self.phone_input)
 
+        self.email_label = QLabel("Email:")
+        self.dialog_layout.addWidget(self.email_label)
         self.email_input = QLineEdit()
         self.email_input.setPlaceholderText("Email")
         self.dialog_layout.addWidget(self.email_input)

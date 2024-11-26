@@ -1,13 +1,15 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
+from sqlalchemy import distinct
 from EmployeeManager import *
 from DBModel import *
-from DBModel import Employee, session
+from DBModel import Employee, Session, session
 from EmployeeDialog import EmployeeDialog
 from SideBar import Sidebar
 from EmployeeTableWidget import EmployeeTableWidget
 from FileExports import FileExports
+import os
 
 # Main Window Class
 class MainMethods(QMainWindow):
@@ -72,44 +74,111 @@ class MainMethods(QMainWindow):
 
         # Employee Info Section
         employee_info_label = QLabel("Employee Info")
-        employee_info_label.setStyleSheet("font-size: 20px; font-weight: bold; padding: 10px 0;")
+        employee_info_label.setStyleSheet("font-family: Georgia, sans-serif; font-size: 20px; font-weight: bold; padding: 10px 0;")
         main_content_layout.addWidget(employee_info_label)
 
-        # Action Buttons
+
+        # Ensure the icon files are in the same directory as this script or provide the correct path
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        excel_icon_path = os.path.join(current_dir, 'excel_icon.png')
+        pdf_icon_path = os.path.join(current_dir, 'pdf_icon.png')
+
+        # Action Buttons Layout
         action_buttons_layout = QHBoxLayout()
+
+        # Add Employee Button
         self.add_employee_button = QPushButton("Add Employee")
-        self.add_employee_button.setStyleSheet(" color: white; padding: 5px;")
+        self.add_employee_button.setStyleSheet("""
+            QPushButton {
+                background-color: #007bff;
+                color: white;
+                padding: 10px 15px;
+                border-radius: 5px;
+                font-size: 14px;
+            }
+            QPushButton:hover {
+                background-color: #0056b3;
+            }
+        """)
         self.add_employee_button.clicked.connect(self.add_employee)
         action_buttons_layout.addWidget(self.add_employee_button)
 
-
-        #initialize the file exports class
+        # Initialize the file exports class
         self.file_exports = FileExports(self)
-        
-        # Add an export excel button to the action buttons layout
+
+        # Export Excel Button
         export_excel_button = QPushButton("Excel Export")
-        export_excel_button.setStyleSheet("background-color: #28a745; color: white; padding: 5px;")
+        excel_icon = QIcon(excel_icon_path)
+        export_excel_button.setIcon(excel_icon)
+        export_excel_button.setStyleSheet("""
+            QPushButton {
+                background-color: #28a745;
+                color: white;
+                padding: 10px 15px;
+                border-radius: 5px;
+                font-size: 14px;
+            }
+            QPushButton:hover {
+                background-color: #218838;
+            }
+        """)
         export_excel_button.clicked.connect(self.file_exports.export_excel)
         action_buttons_layout.addWidget(export_excel_button)
 
-        # Add an export pdf button to the action buttons layout
-        export_pdf_button = QPushButton("Pdf Export")
-        export_pdf_button.setStyleSheet("background-color: #dc3545; color: white; padding: 5px;")
+        # Export PDF Button
+        export_pdf_button = QPushButton("PDF Export")
+        pdf_icon = QIcon(pdf_icon_path)
+        export_pdf_button.setIcon(pdf_icon)
+        export_pdf_button.setStyleSheet("""
+            QPushButton {
+                background-color: #dc3545;
+                color: white;
+                padding: 10px 15px;
+                border-radius: 5px;
+                font-size: 14px;
+            }
+            QPushButton:hover {
+                background-color: #c82333;
+            }
+        """)
         export_pdf_button.clicked.connect(self.file_exports.export_pdf)
         action_buttons_layout.addWidget(export_pdf_button)
 
-        # Add the action buttons layout to the main content layout
+        # # Add the action buttons layout to the main content layout
         main_content_layout.addLayout(action_buttons_layout)
 
+
         # Filter Controls
+        #Need to implement filetering from drop down sections 
+        # next and make them show what's in the database for options.
         filter_layout = QHBoxLayout()
-        self.gender_dropdown = QComboBox()
-        self.gender_dropdown.addItems(["Select Gender", "Male", "Female"])
-        filter_layout.addWidget(self.gender_dropdown)
+
+        #maybe replace this with another filter or a button later
+        # self.gender_dropdown = QComboBox()
+        # # make them show what's in the database for options.
+        # self.gender_dropdown.addItems(["Select Gender", "Male", "Female"])
+        # self.gender_dropdown.currentIndexChanged.connect(self.search_employees)
+
+        # filter_layout.addWidget(self.gender_dropdown)
+
 
         self.position_dropdown = QComboBox()
-        self.position_dropdown.addItems(["Select Position", "Manager", "Developer", "Sales", "HR"])
+        # Add positions to the dropdown from the Employee database
+        self.session = Session()
+        # Query distinct positions from the database
+        distinct_positions = self.session.query(distinct(Employee.position)).all()
+
+        # Extract positions from query result
+        positions = [position[0] for position in distinct_positions]
+
+        # Add positions to the dropdown
+        self.position_dropdown.addItems(["All Position"] + positions)
+
+        self.position_dropdown.currentIndexChanged.connect(self.search_employees)
+
         filter_layout.addWidget(self.position_dropdown)
+
+
 
         self.employee_search = QLineEdit()
         self.employee_search.setPlaceholderText("Search Employee Name...")

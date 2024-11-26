@@ -40,7 +40,7 @@ class EmployeeManager:
     # Search employees in the database
     def search_employees(self, search_text):
         search_pattern = f"%{search_text}%"
-        return self.session.query(Employee).filter(
+        employees = self.session.query(Employee).filter(
             Employee.name.like(search_pattern) |
             Employee.employee_id.like(search_pattern) |
             Employee.position.like(search_pattern) |
@@ -48,4 +48,14 @@ class EmployeeManager:
             Employee.email.like(search_pattern) |
             Employee.phone.like(search_pattern)
         ).all()
+    
+        #if the employee is not found, return all employees
+
+        # If no employees found, return all employees
+        if not employees:
+            return self.get_all_employees()
+        
+        return employees
+
+        
 
