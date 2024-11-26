@@ -5,7 +5,7 @@ import sys
 from sqlalchemy import create_engine, Column, Integer, String, Date
 from sqlalchemy.orm import declarative_base, sessionmaker
 from DBModel import Employee, Session, session
-from MainMethods import *
+from EmployeeEditorPage.MainMethods import *
 
 # Dialog for adding/editing employees
 class EmployeeDialog(QDialog):

@@ -5,8 +5,8 @@ import sys
 from sqlalchemy import create_engine, Column, Integer, String, Date
 from sqlalchemy.orm import declarative_base, sessionmaker
 from DBModel import Employee, Session, session
-from MainMethods import *
-from EmployeeDialog import EmployeeDialog
+from EmployeeEditorPage.MainMethods import *
+from EmployeeEditorPage.EmployeeDialog import EmployeeDialog
 
 
 # Employee Table Widget

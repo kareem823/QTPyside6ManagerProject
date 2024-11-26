@@ -4,6 +4,11 @@ from PySide6.QtGui import *
 from PySide6.QtCore import *
 from sqlalchemy import inspect
 from sqlalchemy.orm import sessionmaker
+import sys
+from EmployeeEditorPage.EmployeeManager import EmployeeManager  # Import your EmployeeManager class
+
+sys.path.insert(0, './')
+
 from DBModel import Employee, engine, Session  # Ensure this imports your Employee model
 # from EmployeeManager import EmployeeManager  # Import your EmployeeManager class
 import pandas as pd
@@ -16,18 +21,19 @@ from reportlab.lib import colors
 from reportlab.lib import *
 #i want to import an excel library
 import xlsxwriter
-from EmployeeManager import EmployeeManager  # Import your EmployeeManager class
 
 
 class FileExports(QMainWindow):
     def __init__(self, main_window):
         super(FileExports, self).__init__()
         self.main_window = main_window
-        # Initialize the EmployeeManager (ensure it's correctly imported)
+
         self.employee_manager = EmployeeManager()
+
 
     # Export data as Excel file (implementation can be added later)
     def export_excel(self):
+
         # Open a file dialog to select the save location
         file_path, _ = QFileDialog.getSaveFileName(
             self, 

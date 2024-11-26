@@ -5,7 +5,7 @@ import sys
 from sqlalchemy import create_engine, Column, Integer, String, Date
 from sqlalchemy.orm import declarative_base, sessionmaker
 from DBModel import Employee, Session, session
-from MainMethods import *
+from EmployeeEditorPage.MainMethods import *
 
 # Sidebar Class
 class Sidebar(QFrame):
@@ -21,14 +21,14 @@ class Sidebar(QFrame):
         self.sidebar_layout.addWidget(title_label)
 
         # Navigation Menu
-        self.manage_employees_button = QComboBox()
-        self.manage_employees_button.addItems(["Manage Employees"])
-        self.manage_employees_button.setStyleSheet("QComboBox { color: white; padding: 30px; text-align: left; } QComboBox:hover { background-color: #34495e; }")
+        self.manage_employees_button = QPushButton()
+        self.manage_employees_button.setText("Manage Employees")
+        self.manage_employees_button.setStyleSheet("QPushButton { color: white; padding: 30px; text-align: left; } QPushButton:hover { background-color: #34495e; }")
         self.sidebar_layout.addWidget(self.manage_employees_button)
 
-        self.manage_finances_button = QComboBox()
-        self.manage_finances_button.addItems(["Manage Finances"])
-        self.manage_finances_button.setStyleSheet("QComboBox { color: white; padding: 30px; text-align: left; } QComboBox:hover { background-color: #34495e; }")
+        self.manage_finances_button = QPushButton()
+        self.manage_finances_button.setText("Manage Finances")
+        self.manage_finances_button.setStyleSheet("QPushButton { color: white; padding: 30px; text-align: left; } QPushButton:hover { background-color: #34495e; }")
         self.sidebar_layout.addWidget(self.manage_finances_button)
 
         # Add a settings button

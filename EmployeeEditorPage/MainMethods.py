@@ -2,13 +2,13 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from sqlalchemy import distinct
-from EmployeeManager import *
+from EmployeeEditorPage.EmployeeManager import *
 from DBModel import *
 from DBModel import Employee, Session, session
-from EmployeeDialog import EmployeeDialog
+from EmployeeEditorPage.EmployeeDialog import EmployeeDialog
 from SideBar import Sidebar
-from EmployeeTableWidget import EmployeeTableWidget
-from FileExports import FileExports
+from EmployeeEditorPage.EmployeeTableWidget import EmployeeTableWidget
+from EmployeeEditorPage.FileExports import FileExports
 import os
 
 # Main Window Class
