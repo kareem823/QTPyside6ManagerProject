@@ -5,49 +5,6 @@ import sys
 from sqlalchemy import distinct
 from EmployeeEditorPage.FileExports import FileExports
 
-class FinanceManager(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("Manage Finances")
-        self.setGeometry(100, 100, 800, 600)
-        self.setup_ui()
-
-    def setup_ui(self):
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
-        layout = QVBoxLayout(central_widget)
-
-        # Manage Finances Title
-        manage_finances_label = QLabel("Manage Finances")
-        manage_finances_label.setStyleSheet("font-size: 24px; font-weight: bold;")
-        layout.addWidget(manage_finances_label)
-
-        # Input for Business Name
-        self.business_name_input = QLineEdit()
-        self.business_name_input.setPlaceholderText("Enter business name")
-        layout.addWidget(self.business_name_input)
-
-        # Button to add a business
-        add_business_button = QPushButton("Add Business")
-        add_business_button.clicked.connect(self.add_business)
-        layout.addWidget(add_business_button)
-
-        # Business List
-        self.business_list_widget = QListWidget()
-        self.business_list_widget.itemClicked.connect(self.create_invoice_page)
-        layout.addWidget(self.business_list_widget)
-
-    def add_business(self):
-        business_name = self.business_name_input.text()
-        if business_name:
-            item = QListWidgetItem(business_name)
-            self.business_list_widget.addItem(item)
-            self.business_name_input.clear()
-
-    def create_invoice_page(self, item):
-        self.invoice_page = InvoicePage(business_name=item.text())
-        self.invoice_page.show()
-
 class InvoicePage(QWidget):
     def __init__(self, business_name):
         super().__init__()
@@ -64,6 +21,13 @@ class InvoicePage(QWidget):
         create_invoice_label.setStyleSheet("font-size: 24px; font-weight: bold;")
         layout.addWidget(create_invoice_label)
 
+        # Instructions
+        invoice_instructions_label = QLabel("Please press on one of the PDF or Word buttons to export the invoice to your device.")
+        invoice_instructions_label.setStyleSheet("font-size: 12px; color: red; font-weight: italic;")
+        layout.addWidget(invoice_instructions_label) 
+
+
+        ########################################################################
         # Business Name
         business_name_label = QLabel(f"Business Name: {self.business_name}")
         layout.addWidget(business_name_label)
@@ -109,9 +73,11 @@ class InvoicePage(QWidget):
         # Export Invoice Buttons
         export_buttons_layout = QHBoxLayout()
 
-        self.file_exporter = FileExports()
+        self.file_exporter = FileExports(main_window=self)
         export_pdf_button = QPushButton("Export as PDF")
         export_pdf_button.setStyleSheet("background-color: #dc3545; color: white;")
+        #need to make a new method to export the invoice to word, and pdf
+        #this is because the curret methods export whats inside the employee list
         export_pdf_button.clicked.connect(self.file_exporter.export_pdf)
         export_buttons_layout.addWidget(export_pdf_button)
 
@@ -138,7 +104,7 @@ class InvoicePage(QWidget):
         price_input = QDoubleSpinBox()
         item_layout.addWidget(price_input)
 
-        # Remove Item Button
+        # Remove Item from invoice Button
         remove_button = QPushButton("Remove")
         remove_button.setStyleSheet("background-color: #dc3545; color: white;")
         remove_button.clicked.connect(lambda: self.remove_invoice_item(item_layout, items_layout))
@@ -153,8 +119,4 @@ class InvoicePage(QWidget):
         QWidget().setLayout(item_layout)
         items_layout.removeItem(item_layout)
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    finance_manager = FinanceManager()
-    finance_manager.show()
-    sys.exit(app.exec())
+

@@ -113,8 +113,8 @@ class FileExports(QMainWindow):
             # apply style to the table
             pdf_table.setStyle(TableStyle([('ALIGN', (0, 0), (-1, -1), 'CENTER'),
                                            ('FONTNAME', (0,0), (-1, -1), 'Helvetica'),
-                                           ('FONTSIZE', (0,0), (-1, -1), 12),
-                                           ('BOTTOMPADDING', (0,0), (-1, -1), 12),
+                                           ('FONTSIZE', (0,0), (-1, -1), 11),
+                                           ('BOTTOMPADDING', (0,0), (-1, -1), 11),
                                            ('GRID', (0,0), (-1, -1), 1, colors.black),
                                            ]))
             #build the document

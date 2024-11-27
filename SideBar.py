@@ -23,18 +23,31 @@ class Sidebar(QFrame):
         # Navigation Menu
         self.manage_employees_button = QPushButton()
         self.manage_employees_button.setText("Manage Employees")
-        self.manage_employees_button.setStyleSheet("QPushButton { color: white; padding: 30px; text-align: left; } QPushButton:hover { background-color: #34495e; }")
+        self.manage_employees_button.setStyleSheet("""QPushButton { 
+                                                   color: white; padding: 30px; text-align: left; 
+                                                   } 
+                                                   QPushButton:hover { background-color: #34495e; }""")
         self.sidebar_layout.addWidget(self.manage_employees_button)
+        self.manage_employees_button.clicked.connect(parent.show_manage_employees)
+
 
         self.manage_finances_button = QPushButton()
         self.manage_finances_button.setText("Manage Finances")
-        self.manage_finances_button.setStyleSheet("QPushButton { color: white; padding: 30px; text-align: left; } QPushButton:hover { background-color: #34495e; }")
+        self.manage_finances_button.setStyleSheet("""QPushButton { 
+                                                  color: white; padding: 30px; text-align: left;
+                                                   } QPushButton:hover 
+                                                  { background-color: #34495e; }""")
         self.sidebar_layout.addWidget(self.manage_finances_button)
+        self.manage_finances_button.clicked.connect(parent.show_manage_finances)
 
         # Add a settings button
         self.settings_button = QPushButton("Settings")
-        self.settings_button.setStyleSheet("QPushButton { color: white; padding: 30px; text-align: left; } QPushButton:hover { background-color: #34495e; }")
+        self.settings_button.setStyleSheet("""QPushButton { 
+                                                  color: white; padding: 30px; text-align: left;
+                                                   } QPushButton:hover 
+                                                  { background-color: #34495e; }""")
         self.sidebar_layout.addWidget(self.settings_button)
+        #self.settings_button.clicked.connect(parent.show_settings)
 
         # Add a logout button
         self.logout_button = QPushButton("Logout")
@@ -46,3 +59,4 @@ class Sidebar(QFrame):
         self.toggle_sidebar_button.setStyleSheet("background-color: #1abc9c; color: white;")
         self.toggle_sidebar_button.clicked.connect(parent.toggle_sidebar)
         self.sidebar_layout.addWidget(self.toggle_sidebar_button)
+

@@ -10,7 +10,8 @@ from SideBar import Sidebar
 from EmployeeEditorPage.EmployeeTableWidget import EmployeeTableWidget
 from EmployeeEditorPage.FileExports import FileExports
 import os
-
+from FinanceManager.FinanceManager import FinanceManager
+# from FinanceManager.InvoicesPage import InvoicePage
 # Main Window Class
 class MainMethods(QMainWindow):
     def __init__(self):
@@ -22,25 +23,48 @@ class MainMethods(QMainWindow):
         self.username = "User"
 
         self.setWindowTitle("Employee Management System")
-        self.setGeometry(100, 100, 1300, 700)
+        self.setGeometry(100, 100, 1300, 600)
         self.setup_ui()
 
     def setup_ui(self):
         # Main window structure
-        central_widget = QWidget()
+
+        ###########################
+        self.central_widget = QWidget()
         # Set the central widget as the main widget of the window
-        self.setCentralWidget(central_widget)
+        self.setCentralWidget(self.central_widget)
+
         # Create a horizontal layout for the central widget
-        main_layout = QHBoxLayout(central_widget)
+        self.main_layout = QHBoxLayout(self.central_widget)
 
         # Left Sidebar (Collapsible)
         self.sidebar = Sidebar(self)
-        main_layout.addWidget(self.sidebar)
+        self.main_layout.addWidget(self.sidebar)
 
+        #create a QStackedwidget to hold different pages
+        self.stacked_widget = QStackedWidget()
+        '''The stretch parameter is used to specify how much space the widget should take 
+        relative to other widgets in the layout. In this case, a stretch factor of 1 means
+         that this widget will take up one unit of space relative to other widgets.'''
+        self.main_layout.addWidget(self.stacked_widget, stretch=1)
+
+        #create the employee page
+        self.employee_page = QWidget()
+        self.setup_employee_page()
+        self.stacked_widget.addWidget(self.employee_page)
+
+        #create the finance management page
+        self.finance_page = QWidget()
+        self.setup_finance_page()
+        self.stacked_widget.addWidget(self.finance_page)
+
+        #set the default page to the manage employees page
+        self.stacked_widget.setCurrentWidget(self.employee_page)
+
+
+    def setup_employee_page(self):
         # Main Content Area
-        main_content = QWidget()
-        # Create a vertical layout for the main content
-        main_content_layout = QVBoxLayout(main_content)
+        main_content_layout = QVBoxLayout(self.employee_page)
 
         # Header Section
         header_layout = QHBoxLayout()
@@ -53,7 +77,7 @@ class MainMethods(QMainWindow):
         self.hamburger_button.setFixedHeight(30)
         self.hamburger_button.setStyleSheet("background-color: #1abc9c; color: white;")
         self.hamburger_button.clicked.connect(self.toggle_sidebar)
-        self.hamburger_button.setVisible(False)  # Initially hidden
+        self.hamburger_button.setVisible(True)  # Initially hidden
         # Add the hamburger button to the header layout
         header_layout.addWidget(self.hamburger_button)
 
@@ -74,14 +98,15 @@ class MainMethods(QMainWindow):
 
         # Employee Info Section
         employee_info_label = QLabel("Employee Info")
-        employee_info_label.setStyleSheet("font-family: Georgia, sans-serif; font-size: 20px; font-weight: bold; padding: 10px 0;")
+        employee_info_label.setStyleSheet("""font-family: Georgia, sans-serif; 
+                                          font-size: 20px; font-weight: bold; padding: 10px 0;""")
         main_content_layout.addWidget(employee_info_label)
 
 
-        # Ensure the icon files are in the same directory as this script or provide the correct path
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        excel_icon_path = os.path.join(current_dir, 'excel_icon.png')
-        pdf_icon_path = os.path.join(current_dir, 'pdf_icon.png')
+        # icons for the action buttons
+        # current_dir = os.path.dirname(os.path.abspath(__file__))
+        # excel_icon_path = os.path.join(current_dir, 'excel_icon.png')
+        # pdf_icon_path = os.path.join(current_dir, 'pdf_icon.png')
 
         # Action Buttons Layout
         action_buttons_layout = QHBoxLayout()
@@ -108,8 +133,8 @@ class MainMethods(QMainWindow):
 
         # Export Excel Button
         export_excel_button = QPushButton("Excel Export")
-        excel_icon = QIcon(excel_icon_path)
-        export_excel_button.setIcon(excel_icon)
+        # excel_icon = QIcon(excel_icon_path)
+        # export_excel_button.setIcon(excel_icon)
         export_excel_button.setStyleSheet("""
             QPushButton {
                 background-color: #28a745;
@@ -127,8 +152,8 @@ class MainMethods(QMainWindow):
 
         # Export PDF Button
         export_pdf_button = QPushButton("PDF Export")
-        pdf_icon = QIcon(pdf_icon_path)
-        export_pdf_button.setIcon(pdf_icon)
+        # pdf_icon = QIcon(pdf_icon_path)
+        # export_pdf_button.setIcon(pdf_icon)
         export_pdf_button.setStyleSheet("""
             QPushButton {
                 background-color: #dc3545;
@@ -163,9 +188,17 @@ class MainMethods(QMainWindow):
 
 
         self.position_dropdown = QComboBox()
+
+        selected_position = self.position_dropdown.currentText()
+
         # Add positions to the dropdown from the Employee database
         self.session = Session()
-        # Query distinct positions from the database
+        # # Query distinct positions from the database
+        # employees = self.session.query(Employee).filter(Employee.position == selected_position).all()
+
+        #     # Update the employee table with the filtered employees
+        # self.table_widget.load_employees(employees)
+
         distinct_positions = self.session.query(distinct(Employee.position)).all()
 
         # Extract positions from query result
@@ -173,12 +206,8 @@ class MainMethods(QMainWindow):
 
         # Add positions to the dropdown
         self.position_dropdown.addItems(["All Position"] + positions)
-
         self.position_dropdown.currentIndexChanged.connect(self.search_employees)
-
         filter_layout.addWidget(self.position_dropdown)
-
-
 
         self.employee_search = QLineEdit()
         self.employee_search.setPlaceholderText("Search Employee Name...")
@@ -190,8 +219,26 @@ class MainMethods(QMainWindow):
         self.table_widget = EmployeeTableWidget(self)
         main_content_layout.addWidget(self.table_widget)
 
-        # Add main content to the main layout
-        main_layout.addWidget(main_content, stretch=1)
+    def setup_finance_page(self):
+        # Finances Page Layout
+        finances_layout = QVBoxLayout(self.finance_page)
+        
+        # Add a hamburger button to the header
+        # make this button always stay on the left side of the header
+        self.hamburger_button = QPushButton()
+        self.hamburger_button.setIcon(self.style().standardIcon(QStyle.SP_ArrowRight))
+        self.hamburger_button.setFixedWidth(30)
+        self.hamburger_button.setFixedHeight(30)
+        self.hamburger_button.setStyleSheet("background-color: #1abc9c; color: white;")
+        self.hamburger_button.clicked.connect(self.toggle_sidebar)
+        self.hamburger_button.setVisible(True)  # Initially hidden
+        # Add the hamburger button to the header layout
+        finances_layout.addWidget(self.hamburger_button)
+
+        # Finance Manager
+        self.finance_manager = FinanceManager()
+        self.finance_manager.setup_ui()
+        finances_layout.addWidget(self.finance_manager)
 
     def add_employee(self):
         dialog = EmployeeDialog(self)
@@ -227,3 +274,10 @@ class MainMethods(QMainWindow):
             self.sidebar.setVisible(True)
             self.hamburger_button.setVisible(False)
             self.sidebar.toggle_sidebar_button.setText("Hide Sidebar")
+
+#i want to add methods to switch between the pages form the sidebar
+    def show_manage_employees(self):
+        self.stacked_widget.setCurrentWidget(self.employee_page)
+
+    def show_manage_finances(self):
+        self.stacked_widget.setCurrentWidget(self.finance_page)
