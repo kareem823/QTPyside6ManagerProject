@@ -7,7 +7,7 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 from DBModel import Employee, Session, session
 from EmployeeEditorPage.MainMethods import *
 from EmployeeEditorPage.EmployeeDialog import EmployeeDialog
-
+from EmployeeEditorPage.EmployeeManager import EmployeeManager
 
 # Employee Table Widget
 class EmployeeTableWidget(QTableWidget):
