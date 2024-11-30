@@ -44,9 +44,48 @@ class FileExports(QMainWindow):
         self.main_window = main_window
         self.employee_manager = EmployeeManager()
 
+
+
     def export_excel(self):
-        # [Existing export_excel implementation]
-        pass
+        # Open a file dialog to select the save location
+        file_path, _ = QFileDialog.getSaveFileName(
+            self, 
+            "Save Excel File", 
+            "", 
+            "Excel Files (*.xlsx);;All Files (*)"
+        )    
+
+        if not file_path:
+            QMessageBox.warning(self, "Warning", "Export cancelled.")
+            return
+
+        try:
+            # Initialize the excel writer
+            workbook = xlsxwriter.Workbook(file_path)
+            worksheet = workbook.add_worksheet()
+            
+            # Write the headers
+            headers = self.HEADERS
+            for col_num, header in enumerate(headers):
+                worksheet.write(0, col_num, header)
+            
+            # Write the data
+            employees = self.employee_manager.get_all_employees()
+            for row_num, employee in enumerate(employees, 1):
+                worksheet.write(row_num, 0, employee.employee_id)
+                worksheet.write(row_num, 1, employee.name)
+                worksheet.write(row_num, 2, employee.gender)
+                worksheet.write(row_num, 3, employee.position)
+                worksheet.write(row_num, 4, employee.birthday.strftime("%Y-%m-%d") if employee.birthday else "")
+                worksheet.write(row_num, 5, employee.phone)
+                worksheet.write(row_num, 6, employee.address)
+                worksheet.write(row_num, 7, employee.email)
+            
+            workbook.close()
+            QMessageBox.information(self, "Success", "Excel exported successfully.")
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Failed to export Excel.\nError: {str(e)}")
+
 
     def export_pdf(self):
         # Open a file dialog to select the save location
@@ -182,3 +221,5 @@ class FileExports(QMainWindow):
             QMessageBox.information(self, "Success", "PDF exported successfully.")
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Failed to export PDF.\nError: {str(e)}")
+
+    

@@ -7,9 +7,8 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 from EmployeeEditorPage.MainMethods import MainMethods
 
 #todo
-# need to reject nulls from the db
-#need to redo rest of invoice code
-#need to add delete business functionality
+#save invoice file buttons
+#add the notes app to the sidebar
 
 if __name__ == '__main__':
     # PySide6 Application

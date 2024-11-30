@@ -17,14 +17,18 @@ class Sidebar(QFrame):
 
         # give the side bar a title
         title_label = QLabel(f"{parent.company_name}")
-        title_label.setStyleSheet("font-size: 20px; font-weight: bold; padding-bottom: 5px; padding-top: 5px; padding-left: 5px; padding-right: 5px")
+        title_label.setStyleSheet("""font-size: 32px; 
+                                  font-weight: bold; 
+                                  padding-bottom: 5px; 
+                                  padding-top: 5px; padding-left: 5px; 
+                                  padding-right: 5px""")
         self.sidebar_layout.addWidget(title_label)
 
         # Navigation Menu
         self.manage_employees_button = QPushButton()
         self.manage_employees_button.setText("Manage Employees")
-        self.manage_employees_button.setStyleSheet("""QPushButton { 
-                                                   color: white; padding: 30px; text-align: left; 
+        self.manage_employees_button.setStyleSheet("""QPushButton { font-size: 16px;
+                                                   color: white; padding: 20px; text-align: left; 
                                                    } 
                                                    QPushButton:hover { background-color: #34495e; }""")
         self.sidebar_layout.addWidget(self.manage_employees_button)
@@ -33,17 +37,46 @@ class Sidebar(QFrame):
 
         self.manage_finances_button = QPushButton()
         self.manage_finances_button.setText("Manage Finances")
-        self.manage_finances_button.setStyleSheet("""QPushButton { 
-                                                  color: white; padding: 30px; text-align: left;
+        self.manage_finances_button.setStyleSheet("""QPushButton { font-size: 16px;
+                                                  color: white; padding: 20px; text-align: left;
                                                    } QPushButton:hover 
                                                   { background-color: #34495e; }""")
         self.sidebar_layout.addWidget(self.manage_finances_button)
         self.manage_finances_button.clicked.connect(parent.show_manage_finances)
 
+        # # Add a button to the side bar for notes page
+        # self.notes_button = QPushButton()
+        # self.notes_button.setText("Notes")
+        # self.notes_button.setStyleSheet("""QPushButton { font-size: 16px;
+        #                                 color: white; padding: 20px; text-align: left;
+        #                                  } QPushButton:hover
+        #                                 { background-color: #34495e; }""")
+        # self.sidebar_layout.addWidget(self.notes_button)
+
+        '''
+        OTHER THINGS TO ADD IN THE FUTURE:
+        Time Tracking Tools (e.g., Toggl, Harvest):
+
+        These applications allow users to track how much time is spent on various tasks and
+        projects, helping to identify areas for improvement and optimize productivity.
+
+        Virtual Assistant Services (e.g., Time Etc, Belay):
+
+        Hiring a virtual assistant can help manage administrative tasks, schedule meetings, 
+        and handle other time-consuming activities, freeing up the CEO's
+         time for strategic decision-making.
+
+        Mind Mapping Software (e.g., MindMeister, XMind):
+
+        These tools help visualize ideas and strategies, making it easier to brainstorm and
+        organize thoughts for presentations or planning sessions.
+
+        '''
+
         # Add a settings button
         self.settings_button = QPushButton("Settings")
-        self.settings_button.setStyleSheet("""QPushButton { 
-                                                  color: white; padding: 30px; text-align: left;
+        self.settings_button.setStyleSheet("""QPushButton { font-size: 16px;
+                                                  color: white; padding: 20px; text-align: left;
                                                    } QPushButton:hover 
                                                   { background-color: #34495e; }""")
         self.sidebar_layout.addWidget(self.settings_button)
@@ -51,7 +84,9 @@ class Sidebar(QFrame):
 
         # Add a logout button
         self.logout_button = QPushButton("Logout")
-        self.logout_button.setStyleSheet("QPushButton { color: white; padding: 30px; text-align: left; } QPushButton:hover { background-color: #34495e; }")
+        self.logout_button.setStyleSheet("""QPushButton { font-size: 16px;
+                                          color: white; padding: 20px; text-align: left; } 
+                                         QPushButton:hover { background-color: #34495e; }""")
         self.sidebar_layout.addWidget(self.logout_button)
 
         # Add toggle button to the sidebar in hamburger menu style 
