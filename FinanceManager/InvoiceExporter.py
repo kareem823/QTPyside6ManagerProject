@@ -105,6 +105,11 @@ class InvoiceExporter:
             elements.append(table)
             elements.append(Spacer(1, 12))
 
+            # Total Amount Due
+            total_due = sum(item['quantity'] * item['price'] for item in invoice_data['invoice_items'])
+            total_paragraph = Paragraph(f"<b>Total Amount Due: ${total_due:.2f}</b>", styles['LeftNormal'])
+            elements.append(total_paragraph)
+
             # Notes
             if invoice_data['notes']:
                 elements.append(Paragraph("Notes:", styles['LeftItalic']))
@@ -113,13 +118,11 @@ class InvoiceExporter:
 
             # Company Footer
             if invoice_data['company_footer']:
+                #I wanna add a line to separate the footer
+                elements.append(Spacer(1, 11))
                 elements.append(Paragraph(invoice_data['company_footer'], styles['CenterBold']))
-                elements.append(Spacer(1, 10))
+                elements.append(Spacer(1, 8))
 
-            # Total Amount Due
-            total_due = sum(item['quantity'] * item['price'] for item in invoice_data['invoice_items'])
-            total_paragraph = Paragraph(f"<b>Total Amount Due: ${total_due:.2f}</b>", styles['LeftNormal'])
-            elements.append(total_paragraph)
 
             # Build the PDF
             doc.build(elements)

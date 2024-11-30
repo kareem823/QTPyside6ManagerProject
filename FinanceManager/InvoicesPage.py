@@ -8,58 +8,58 @@ class InvoicePage(QWidget):
     def __init__(self, business_name):
         super().__init__()
         self.setWindowTitle("Create Invoice")
-        self.setGeometry(100, 100, 600, 600)  # Increased height for better UI
+        self.setGeometry(100, 100, 800, 500)  # You can adjust the size as needed
         self.business_name = business_name
         self.invoice_exporter = InvoiceExporter(parent=self)  # Initialize InvoiceExporter **before** setting up UI
         self.setup_invoices_ui()
 
     def setup_invoices_ui(self):
-        layout = QVBoxLayout(self)
+        main_layout = QVBoxLayout(self)
 
         # Title
         create_invoice_label = QLabel("Create Invoice")
         create_invoice_label.setStyleSheet("font-size: 24px; font-weight: bold;")
-        layout.addWidget(create_invoice_label)
+        main_layout.addWidget(create_invoice_label)
 
         # Instructions
         invoice_instructions_label = QLabel("Please press one of the PDF or Word buttons to export the invoice to your device.")
         invoice_instructions_label.setStyleSheet("font-size: 12px; color: red; font-weight: italic;")
-        layout.addWidget(invoice_instructions_label) 
+        main_layout.addWidget(invoice_instructions_label) 
 
         # Business Name
         business_name_label = QLabel(f"Business Name: {self.business_name}")
         business_name_label.setStyleSheet("font-size: 14px; font-weight: bold;")
-        layout.addWidget(business_name_label)
+        main_layout.addWidget(business_name_label)
 
         # Invoice Number
         invoice_number_input = QLineEdit()
         invoice_number_input.setPlaceholderText("Invoice Number")
         invoice_number_input.setObjectName("invoice_number")
-        layout.addWidget(invoice_number_input)
+        main_layout.addWidget(invoice_number_input)
 
         # Customer Name
         customer_name_input = QLineEdit()
         customer_name_input.setPlaceholderText("Customer Name")
         customer_name_input.setObjectName("customer_name")
-        layout.addWidget(customer_name_input)
+        main_layout.addWidget(customer_name_input)
 
         # Customer Email
         customer_email_input = QLineEdit()
         customer_email_input.setPlaceholderText("Customer Email")
         customer_email_input.setObjectName("customer_email")
-        layout.addWidget(customer_email_input)
+        main_layout.addWidget(customer_email_input)
 
         # Customer Phone
         customer_phone_input = QLineEdit()
         customer_phone_input.setPlaceholderText("Customer Phone")
         customer_phone_input.setObjectName("customer_phone")
-        layout.addWidget(customer_phone_input)
+        main_layout.addWidget(customer_phone_input)
 
         # Customer Address
         customer_address_input = QLineEdit()
         customer_address_input.setPlaceholderText("Customer Address")
         customer_address_input.setObjectName("customer_address")
-        layout.addWidget(customer_address_input)
+        main_layout.addWidget(customer_address_input)
 
         # Date Inputs
         date_layout = QHBoxLayout()
@@ -79,31 +79,42 @@ class InvoicePage(QWidget):
         due_date_input.setDate(QDate.currentDate().addDays(30))  # Default due date 30 days later
         due_date_input.setObjectName("due_date")
         date_layout.addWidget(due_date_input)
-        layout.addLayout(date_layout)
+        main_layout.addLayout(date_layout)
 
-        # Invoice Items
-        items_layout = QVBoxLayout()
-        self.invoice_items = []  # List to hold item layouts
+        # Invoice Items Section with Scroll Area
+        invoice_items_section = QWidget()
+        invoice_items_layout = QVBoxLayout(invoice_items_section)
 
+        # Scroll Area
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setFixedHeight(300)  # Adjust the height as needed to fit ~12 items
+        scroll_area.setStyleSheet("border: 1px solid gray;")
+        main_layout.addWidget(scroll_area)
+
+        # Container Widget inside Scroll Area
+        self.items_container = QWidget()
+        self.items_container_layout = QVBoxLayout(self.items_container)
+        self.items_container_layout.setAlignment(Qt.AlignTop)
+        scroll_area.setWidget(self.items_container)
+
+        # Add Item Button
         add_item_button = QPushButton("Add Item +")
         add_item_button.setStyleSheet("background-color: green; color: white;")
-        add_item_button.clicked.connect(lambda: self.add_invoice_item(items_layout))
-        layout.addWidget(add_item_button)
+        add_item_button.clicked.connect(self.add_invoice_item)
+        main_layout.addWidget(add_item_button)
         
-        # Add items to the invoice
-        layout.addLayout(items_layout)
-
         # Notes
         note_input = QTextEdit()
         note_input.setPlaceholderText("Notes")
         note_input.setObjectName("notes")
-        layout.addWidget(note_input)
+        main_layout.addWidget(note_input)
 
         # Company Footer
         company_footer_input = QTextEdit()
         company_footer_input.setPlaceholderText("Company Footer")
         company_footer_input.setObjectName("company_footer")
-        layout.addWidget(company_footer_input)
+        main_layout.addWidget(company_footer_input)
 
         # Export Invoice Buttons
         export_buttons_layout = QHBoxLayout()
@@ -118,10 +129,12 @@ class InvoicePage(QWidget):
         export_word_button.clicked.connect(self.handle_export_word)  # Connect to handler method
         export_buttons_layout.addWidget(export_word_button)
 
-        layout.addLayout(export_buttons_layout)
+        main_layout.addLayout(export_buttons_layout)
+
+        self.invoice_items = []  # Initialize the list to hold invoice items
 
     # Method to add an invoice item
-    def add_invoice_item(self, items_layout):
+    def add_invoice_item(self):
         item_layout = QHBoxLayout()
 
         # Item Description
@@ -133,31 +146,52 @@ class InvoicePage(QWidget):
         # Quantity
         quantity_input = QSpinBox()
         quantity_input.setMinimum(1)
-        quantity_input.setMaximum(1000)
-        quantity_input.setValue(1)  # Set default value to 1
+        quantity_input.setValue(0)  # Set default value to 1
         quantity_input.setObjectName("quantity_input")
+        quantity_input.setFixedWidth(80)  # Set fixed width
+        quantity_input.setStyleSheet("""
+            QSpinBox {
+                font-size: 11px;
+            }
+            QSpinBox::up-button {
+                text: "+";
+                width: 19px;
+                height: 19px;
+            }
+        """)
         item_layout.addWidget(quantity_input)
 
         # Price
         price_input = QDoubleSpinBox()
-        price_input.setMinimum(0.01)
+        price_input.setMinimum(0.00)
         price_input.setDecimals(2)
         price_input.setValue(0.00)
+        price_input.setFixedWidth(65)  # Set fixed width
+        price_input.setStyleSheet("""
+            QDoubleSpinBox {
+                font-size: 11px;
+            }
+            QDoubleSpinBox::up-button {
+                text: "+";
+                width: 19px;
+                height: 19px;
+            }
+        """)
         price_input.setObjectName("price_input")
         item_layout.addWidget(price_input)
 
         # Remove Button
         remove_button = QPushButton("Remove")
         remove_button.setStyleSheet("background-color: #dc3545; color: white;")
-        remove_button.clicked.connect(lambda: self.remove_invoice_item(item_layout, items_layout))
+        remove_button.clicked.connect(lambda: self.remove_invoice_item(item_layout))
         item_layout.addWidget(remove_button)
 
-        # Add the item layout to the invoice items list and to the GUI
-        items_layout.addLayout(item_layout)
+        # Add the item layout to the items container
+        self.items_container_layout.addLayout(item_layout)
         self.invoice_items.append(item_layout)
 
     # Method to remove an invoice item
-    def remove_invoice_item(self, item_layout, items_layout):
+    def remove_invoice_item(self, item_layout):
         try:
             # Remove the item layout from the list
             self.invoice_items.remove(item_layout)
@@ -170,9 +204,6 @@ class InvoicePage(QWidget):
             child = item_layout.takeAt(0)
             if child.widget():
                 child.widget().deleteLater()
-
-        # Remove the layout from the parent layout
-        items_layout.removeItem(item_layout)
 
     # Method for handling the export to PDF
     def handle_export_pdf(self):
@@ -200,7 +231,7 @@ class InvoicePage(QWidget):
         company_footer_widget = self.findChild(QTextEdit, "company_footer")
 
         # Ensure all widgets are found
-        if not all([invoice_number_widget, customer_name_widget, customer_phone_widget, customer_email_widget, customer_address_widget, invoice_date_widget, due_date_widget, notes_widget]):
+        if not all([invoice_number_widget, customer_name_widget, customer_phone_widget, customer_email_widget, customer_address_widget, invoice_date_widget, due_date_widget, notes_widget, company_footer_widget]):
             QMessageBox.warning(self, "Error", "One or more input fields are missing.")
             return None
 
@@ -213,7 +244,6 @@ class InvoicePage(QWidget):
         due_date = due_date_widget.date().toString("yyyy-MM-dd")
         notes = notes_widget.toPlainText().strip()
         company_footer = company_footer_widget.toPlainText().strip()
-
 
         # Validation
         if not invoice_number:
