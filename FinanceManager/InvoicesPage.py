@@ -191,20 +191,29 @@ class InvoicePage(QWidget):
         # Retrieve inputs with correct object names
         invoice_number_widget = self.findChild(QLineEdit, "invoice_number")
         customer_name_widget = self.findChild(QLineEdit, "customer_name")
+        customer_phone_widget = self.findChild(QLineEdit, "customer_phone")
+        customer_email_widget = self.findChild(QLineEdit, "customer_email")
+        customer_address_widget = self.findChild(QLineEdit, "customer_address")
         invoice_date_widget = self.findChild(QDateEdit, "invoice_date")
         due_date_widget = self.findChild(QDateEdit, "due_date")
         notes_widget = self.findChild(QTextEdit, "notes")
+        company_footer_widget = self.findChild(QTextEdit, "company_footer")
 
         # Ensure all widgets are found
-        if not all([invoice_number_widget, customer_name_widget, invoice_date_widget, due_date_widget, notes_widget]):
+        if not all([invoice_number_widget, customer_name_widget, customer_phone_widget, customer_email_widget, customer_address_widget, invoice_date_widget, due_date_widget, notes_widget]):
             QMessageBox.warning(self, "Error", "One or more input fields are missing.")
             return None
 
         invoice_number = invoice_number_widget.text().strip()
         customer_name = customer_name_widget.text().strip()
+        customer_phone = customer_phone_widget.text().strip()
+        customer_email = customer_email_widget.text().strip()
+        customer_address = customer_address_widget.text().strip()
         invoice_date = invoice_date_widget.date().toString("yyyy-MM-dd")
         due_date = due_date_widget.date().toString("yyyy-MM-dd")
         notes = notes_widget.toPlainText().strip()
+        company_footer = company_footer_widget.toPlainText().strip()
+
 
         # Validation
         if not invoice_number:
@@ -259,9 +268,13 @@ class InvoicePage(QWidget):
             "business_name": self.business_name,
             "invoice_number": invoice_number,
             "customer_name": customer_name,
+            "customer_phone": customer_phone,
+            "customer_email": customer_email,
+            "customer_address": customer_address,
             "invoice_date": invoice_date,
             "due_invoice_date": due_date,
             "notes": notes,
+            "company_footer": company_footer,
             "invoice_items": items
         }         
         
