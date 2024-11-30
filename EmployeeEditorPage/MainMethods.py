@@ -11,6 +11,8 @@ from EmployeeEditorPage.EmployeeTableWidget import EmployeeTableWidget
 from EmployeeEditorPage.FileExports import FileExports
 import os
 from FinanceManager.FinanceManager import FinanceManager
+from CompanyListDB import *
+
 # from FinanceManager.InvoicesPage import InvoicePage
 # Main Window Class
 class MainMethods(QMainWindow):
@@ -206,7 +208,7 @@ class MainMethods(QMainWindow):
 
         # Add positions to the dropdown
         self.position_dropdown.addItems(["All Position"] + positions)
-        self.position_dropdown.currentIndexChanged.connect(self.search_employees)
+        self.position_dropdown.currentIndexChanged.connect(self.search_employees_dropdown)
         filter_layout.addWidget(self.position_dropdown)
 
         self.employee_search = QLineEdit()
@@ -281,3 +283,29 @@ class MainMethods(QMainWindow):
 
     def show_manage_finances(self):
         self.stacked_widget.setCurrentWidget(self.finance_page)
+
+ #i wanna add a method to filter the employees by position
+
+    def search_employees_dropdown(self):
+        selected_position = self.position_dropdown.currentText().strip()
+
+        # Check if a valid position is selected
+        if not selected_position or selected_position == "All Position":
+            query = self.session.query(Employee)
+        else:
+            query = self.session.query(Employee).filter(Employee.position == selected_position)
+
+        try:
+            # Execute the query to fetch employees
+            employees = query.all()
+        except Exception as e:
+            # Handle any exceptions that occur during the query
+            QMessageBox.critical(self, "Database Error", f"An error occurred while fetching employees:\n{str(e)}")
+            employees = []
+        
+        # Check if any employees were found
+        if not employees:
+            QMessageBox.information(self, "Search Result", "No matching employees found.")
+            self.table_widget.load_employees([])
+        else:
+            self.table_widget.load_employees(employees)
