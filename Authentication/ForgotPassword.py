@@ -25,10 +25,14 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # ssl_config.setPeerVerifyMode(QSslSocket.PeerVerifyDisabled)
 
 class ForgotPassword(QWidget):
-    def __init__(self):
+    def __init__(self, main_window):
         super().__init__()
         self.setWindowTitle("Forgot Password")
         self.setGeometry(100, 100, 500, 400)
+
+        # Connect to the main window's close_all_windows_signal
+        main_window.close_all_windows_signal.connect(self.close)
+
         self.setup_ui()
 
     def setup_ui(self):

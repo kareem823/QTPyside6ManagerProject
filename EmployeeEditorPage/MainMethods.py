@@ -12,12 +12,34 @@ from EmployeeEditorPage.FileExports import FileExports
 import os
 from FinanceManager.FinanceManager import FinanceManager
 from CompanyListDB import *
+from supabase import create_client, Client
+from dotenv import load_dotenv
+from PySide6.QtNetwork import QSslConfiguration
+from Authentication.SignInWindow import SignInWindow
+from Authentication.SignUp import SignUp
+from Authentication.ForgotPassword import ForgotPassword
+from FinanceManager.InvoicesPage import InvoicePage
+
+# #initialize supabase client
+# # Load environment variables
+# load_dotenv()
+
+# # Access environment variables
+# SUPABASE_URL = os.getenv('SUPABASE_URL')
+# SUPABASE_KEY = os.getenv('SUPABASE_KEY')
+
+# supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # from FinanceManager.InvoicesPage import InvoicePage
 # Main Window Class
 class MainMethods(QMainWindow):
+        # Signal to notify all child windows to close
+    close_all_windows_signal = Signal()
+
     def __init__(self):
         super().__init__()
+
+        self.child_windows = []  # Keep track of child windows
 
         # make the global variable for the company name
         self.company_name = "Company"
@@ -26,6 +48,21 @@ class MainMethods(QMainWindow):
 
         self.setWindowTitle("Employee Management System")
         self.setGeometry(100, 100, 1300, 600)
+
+        # Connect to the main window's close_all_windows_signal
+        # Inside MainWindow class or relevant method
+        # child_window = SignInWindow(main_window=self)
+        # self.register_child_window(child_window)
+        # child_window.show()
+
+        # signup_window = SignUp(main_window=self)
+        # self.register_child_window(signup_window)
+        # signup_window.show()
+
+        # forgot_password_window = ForgotPassword(main_window=self)
+        # self.register_child_window(forgot_password_window)
+        # forgot_password_window.show()
+
         self.setup_ui()
 
     def setup_ui(self):
@@ -309,3 +346,29 @@ class MainMethods(QMainWindow):
             self.table_widget.load_employees([])
         else:
             self.table_widget.load_employees(employees)
+
+
+    # def closeEvent(self, event):
+    #     """Handle cleanup when the main window is closed."""
+    #     reply = QMessageBox.question(
+    #         self,
+    #         "Confirm Exit",
+    #         "Are you sure you want to exit the application?",
+    #         QMessageBox.Yes | QMessageBox.No
+    #     )
+
+    #     if reply == QMessageBox.Yes:
+    #         # Emit signal to close all child windows
+    #         self.close_all_windows_signal.emit()
+
+    #         # Perform additional cleanup if necessary
+    #         # e.g., logging out user, closing database sessions
+
+    #         event.accept()
+    #     else:
+    #         event.ignore()
+
+    # def register_child_window(self, window):
+    #     """Register a child window to ensure it closes with the main window."""
+    #     self.child_windows.append(window)
+    #     self.close_all_windows_signal.connect(window.close)

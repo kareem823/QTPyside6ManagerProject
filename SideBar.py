@@ -6,6 +6,22 @@ from sqlalchemy import create_engine, Column, Integer, String, Date
 from sqlalchemy.orm import declarative_base, sessionmaker
 from DBModel import Employee, Session, session
 from EmployeeEditorPage.MainMethods import *
+# from Authentication.SignInWindow import SignInWindow
+from supabase import create_client, Client
+from dotenv import load_dotenv
+from PySide6.QtNetwork import QSslConfiguration
+from PySide6.QtCore import Signal
+import os
+
+#initialize supabase client
+# Load environment variables
+load_dotenv(dotenv_path="authentication/.env")
+
+# Access environment variables
+SUPABASE_URL = os.getenv('SUPABASE_URL')
+SUPABASE_KEY = os.getenv('SUPABASE_KEY')
+
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # Sidebar Class
 class Sidebar(QFrame):
@@ -14,6 +30,7 @@ class Sidebar(QFrame):
         self.setFixedWidth(200)
         self.setStyleSheet("background-color: #2c3e50; color: white;")
         self.sidebar_layout = QVBoxLayout(self)
+
 
         # give the side bar a title
         title_label = QLabel(f"{parent.company_name}")
@@ -87,6 +104,7 @@ class Sidebar(QFrame):
         self.logout_button.setStyleSheet("""QPushButton { font-size: 16px;
                                           color: white; padding: 20px; text-align: left; } 
                                          QPushButton:hover { background-color: #34495e; }""")
+        # self.logout_button.clicked.connect(self.signout)
         self.sidebar_layout.addWidget(self.logout_button)
 
         # Add toggle button to the sidebar in hamburger menu style 
@@ -95,3 +113,22 @@ class Sidebar(QFrame):
         self.toggle_sidebar_button.clicked.connect(parent.toggle_sidebar)
         self.sidebar_layout.addWidget(self.toggle_sidebar_button)
 
+
+        
+    # def signout(self):
+    #     """Log out the user and close all windows."""
+    #     try:
+    #         # Perform Supabase logout
+    #         supabase.auth.sign_out()
+    #         QMessageBox.information(self, "Sign Out", "You have successfully signed out.")
+
+    #         # Close the main window to trigger full application closure
+    #         parent = self.parent()
+    #         if parent:
+    #             parent.close()
+
+    #     # Close the main window to trigger the closure of all child windows
+    #         self.parent().close()
+
+    #     except Exception as e:
+    #         QMessageBox.critical(self, "Sign Out Failed", f"An error occurred: {e}")

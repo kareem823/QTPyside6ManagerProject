@@ -10,7 +10,11 @@ class InvoicePage(QWidget):
         self.setWindowTitle("Create Invoice")
         self.setGeometry(100, 100, 800, 500)  # You can adjust the size as needed
         self.business_name = business_name
-        self.invoice_exporter = InvoiceExporter(parent=self)  # Initialize InvoiceExporter **before** setting up UI
+
+        # self.invoice_exporter = InvoiceExporter(parent=self)  # Initialize InvoiceExporter **before** setting up UI
+
+        # main_window.close_all_windows_signal.connect(self.close)
+
         self.setup_invoices_ui()
 
     def setup_invoices_ui(self):
